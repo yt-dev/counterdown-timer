@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import Image from "next/image";
+
+import workerPic from "../assets/worker.png";
+import oyePic from "../assets/oye.png";
+import excitedPic from "../assets/excited.png";
 
 interface CountdownTimerProps {
   targetTime: Date;
@@ -18,13 +23,24 @@ function CountdownTimer({ targetTime }: CountdownTimerProps) {
     return () => clearInterval(timerId);
   }, [targetTime, timeLeft]);
 
-  // const formattedTime = new Date(timeLeft * 1000).toISOString().substr(11, 8);
+  const isWeekend = useMemo(() => !isWeekday(new Date()), []);
 
   return (
     <div>
-      {/* <p>Time Left: {formattedTime}</p> */}
+      <Image
+        className="dark:invert"
+        src={isWeekend ? excitedPic : timeLeft ? workerPic : oyePic}
+        alt="Losed sticker here..."
+        width={180}
+        height={38}
+        priority
+      />
       <h1 className="flex-auto text-7xl font-semibold text-slate-900">
-        {timeLeft === 0 ? "🌕" : `还有${timeLeft}秒下班，撑住🫡`}
+        {isWeekend
+          ? "Happy Weekend."
+          : timeLeft
+          ? `还有${timeLeft}秒下班，撑住🫡`
+          : "沉迷工作不能自拔"}
       </h1>
     </div>
   );
@@ -45,6 +61,10 @@ function calculateTimeLeft(targetTime: Date): number {
     (targetTime.getTime() - now.getTime()) / 1000
   );
   return differenceInSeconds;
+}
+
+function isWeekday(date: Date): boolean {
+  return date.getDay() >= 1 && date.getDay() <= 5;
 }
 
 export default CountdownTimer;
