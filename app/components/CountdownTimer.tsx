@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useReducer } from "react";
 import Image from "next/image";
 
 import workerPic from "../assets/worker.png";
@@ -14,6 +14,8 @@ interface CountdownTimerProps {
 function CountdownTimer({ targetTime }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(targetTime));
 
+  const [showCounter, toggleCounter] = useReducer((s) => !s, false);
+
   useEffect(() => {
     const timerId = setInterval(() => {
       if (timeLeft === 0) return;
@@ -26,21 +28,23 @@ function CountdownTimer({ targetTime }: CountdownTimerProps) {
   const isWeekend = useMemo(() => !isWeekday(new Date()), []);
 
   return (
-    <div>
+    <div onClick={toggleCounter}>
       <Image
         className="dark:invert"
-        src={isWeekend ? excitedPic : timeLeft ? workerPic : oyePic}
+        src={isWeekend ? excitedPic : !showCounter ? oyePic : workerPic}
         alt="Losed sticker here..."
         width={180}
         height={38}
         priority
       />
-      <h1 className="flex-auto text-7xl font-semibold text-slate-900">
+      <h1 className="flex-auto text-7xl font-semibold text-slate-900 dark:invert">
         {isWeekend
           ? "Happy Weekend."
+          : !showCounter
+          ? "沉迷工作不能自拔"
           : timeLeft
           ? `还有${timeLeft}秒下班，撑住🫡`
-          : "沉迷工作不能自拔"}
+          : "Hmm...那么早下班、一刻不工作混身难受"}
       </h1>
     </div>
   );
